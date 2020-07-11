@@ -1,0 +1,21 @@
+#!/bin/bash
+exec 1> >(logger -s -t $(basename $0)) 2>&1
+
+if [ -z $1 ]; then
+	cache=y
+else
+	cache=$1
+fi	
+
+#docker pull ubuntu
+docker pull kalilinux/kali-linux-docker
+#cd /usr/local/src/dockerfile/phishing
+#docker build -t phishing .
+cd /usr/local/src/dockerfile/exploit/Egscape
+git pull
+cd /usr/local/src/dockerfile/exploit
+if [ $cache == "n" ];then
+	docker build --no-cache -t exploit .
+else
+	docker build -t exploit .
+fi

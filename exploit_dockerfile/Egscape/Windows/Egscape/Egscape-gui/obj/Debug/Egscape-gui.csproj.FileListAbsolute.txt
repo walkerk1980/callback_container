@@ -1,0 +1,9 @@
+C:\Users\keith.walker\Source\Repos\Egscape\Windows\Egscape\Egscape-gui\bin\Debug\Egscape-gui.exe.config
+C:\Users\keith.walker\Source\Repos\Egscape\Windows\Egscape\Egscape-gui\bin\Debug\Egscape-gui.exe
+C:\Users\keith.walker\Source\Repos\Egscape\Windows\Egscape\Egscape-gui\bin\Debug\Egscape-gui.pdb
+C:\Users\keith.walker\Source\Repos\Egscape\Windows\Egscape\Egscape-gui\obj\Debug\Egscape-gui.csprojResolveAssemblyReference.cache
+C:\Users\keith.walker\Source\Repos\Egscape\Windows\Egscape\Egscape-gui\obj\Debug\Egscape_gui.EgscapeMainForm.resources
+C:\Users\keith.walker\Source\Repos\Egscape\Windows\Egscape\Egscape-gui\obj\Debug\Egscape_gui.Properties.Resources.resources
+C:\Users\keith.walker\Source\Repos\Egscape\Windows\Egscape\Egscape-gui\obj\Debug\Egscape-gui.csproj.GenerateResource.Cache
+C:\Users\keith.walker\Source\Repos\Egscape\Windows\Egscape\Egscape-gui\obj\Debug\Egscape-gui.exe
+C:\Users\keith.walker\Source\Repos\Egscape\Windows\Egscape\Egscape-gui\obj\Debug\Egscape-gui.pdb

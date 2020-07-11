@@ -1,0 +1,15 @@
+#!/bin/bash
+
+user=$1
+
+currentmem=$(/usr/bin/groups OPTIVLABS\\$user|/bin/grep docker|/usr/bin/wc -l)
+
+domuser=$(echo OPTIVLABS\\$user)
+
+if [ $currentmem -eq 1 ] ;then
+	echo "You are a current member of the Docker group"
+else
+	echo adding user $domuser to docker group
+	/usr/sbin/usermod -G docker $domuser
+fi
+

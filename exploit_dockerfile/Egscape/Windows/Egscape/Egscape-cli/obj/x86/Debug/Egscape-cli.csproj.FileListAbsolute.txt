@@ -1,0 +1,5 @@
+C:\Users\keith.walker\Source\Repos\Egscape\Windows\Egscape-cli\Egscape-cli\bin\Debug\Egscape-cli.exe
+C:\Users\keith.walker\Source\Repos\Egscape\Windows\Egscape-cli\Egscape-cli\bin\Debug\Egscape-cli.pdb
+C:\Users\keith.walker\Source\Repos\Egscape\Windows\Egscape-cli\Egscape-cli\obj\x86\Debug\Egscape-cli.csprojResolveAssemblyReference.cache
+C:\Users\keith.walker\Source\Repos\Egscape\Windows\Egscape-cli\Egscape-cli\obj\x86\Debug\Egscape-cli.exe
+C:\Users\keith.walker\Source\Repos\Egscape\Windows\Egscape-cli\Egscape-cli\obj\x86\Debug\Egscape-cli.pdb

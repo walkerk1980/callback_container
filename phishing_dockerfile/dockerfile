@@ -1,0 +1,4 @@
+FROM ubuntu
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confnew" --assume-yes -y --yes -f dist-upgrade && DEBIAN_FRONTEND=noninteractive apt-get install -y apache2 openssh-server nano iputils-ping dnsutils tcpdump netcat net-tools php screen tmux
+RUN /bin/sed -i s/"PermitRootLogin prohibit-password"/"PermitRootLogin yes"/ /etc/ssh/sshd_config
+RUN /bin/systemctl enable ssh

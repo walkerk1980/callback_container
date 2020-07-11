@@ -1,0 +1,193 @@
+#!/bin/bash
+
+sudoer=$(echo $SUDO_USER | cut -d'\' -f2)
+
+user=$(/usr/bin/whoami)
+
+if [ "$user" != "root" ]; then
+    echo -e "\nYou must run this script with sudo!\n"
+    exit
+
+    name=$(/usr/bin/whoami|cut -d'\' -f2)
+    echo
+
+    dockermembership=$(sudo /usr/local/bin/dockergroup $name)
+    dmemwc=$(echo $dockermembership |wc -c)
+    
+    if [ "$dmemwc" = "45" ] ;then
+    	echo "You are a member of the Docker Group"
+    else
+    	echo -e "You have been added to the Docker group,\nyou must log out and back in once,\nbefore you can continue to use this script or docker\n"
+    	exit
+    fi
+else
+    name=$sudoer
+fi
+
+echo;echo
+
+while getopts n:x:z:hpa:k:r:i: opts; do
+  case ${opts} in
+    n)
+      name=${OPTARG}_$name
+      echo -e "Container Name: $name\n"
+      ;;
+    x)
+      hostDir=/home/$sudoer/${OPTARG}
+      echo "Copying: $hostDir to $3:/root/${OPTARG}"
+      /usr/bin/docker cp $hostDir $3:/root/
+      exit
+      ;;
+    z)
+      containerDir=${OPTARG}
+      if [ $4 ]; then
+        dot=$(echo "$4"|grep \\.\\.| wc -l)
+        star=$(echo "$4"|egrep '[*]'| wc -l)
+        sc=$(echo "$4"|egrep '[;]'| wc -l)
+        if [ $dot -eq 1 ]; then
+          echo "DestinationFolderName cannot contain .."
+          exit
+        elif [ $star -eq 1 ]; then
+          echo "DestinationFolderName cannot contain *"
+          exit
+        elif [ $sc -eq 1 ]; then
+          echo "DestinationFolderName cannot contain ;"
+          exit
+        fi
+        echo "Copying: $3:$containerDir to /home/$sudoer/$4"
+        /usr/bin/docker cp $3:$containerDir /home/$sudoer/$4
+        chown -R OPTIVLABS\\$sudoer:OPTIVLABS\\domain^users /home/$sudoer/$4
+      else
+        echo "Copying: $3:$containerDir to /home/$sudoer/"
+        /usr/bin/docker cp $3:$containerDir /home/$sudoer/
+        chown -R OPTIVLABS\\$sudoer:OPTIVLABS\\domain^users /home/$sudoer/$containerDir
+      fi
+      exit
+      ;;
+    h)
+      echo "Usage: $0 [options]";
+      echo "Example: $0 -n container_name";
+      echo "Example: $0  -x file_name_in_home_dir_on_host container_name";
+      echo "Example: $0  -z full_path_in_container container_name <optionalDestinationFolderName>";
+      echo " -n ContainerName - Create NEW conatiner with specified name"
+      echo " -x Copy file/folder from Host ~/ to Container /root/"
+      echo " -z Copy file/folder from Container full_path to Host ~/<optionalFoldername>"
+      echo " -p Show existing containers"
+      echo " -a ContainerName - Attach to container";
+      echo " -e ContainerName - Attach to container on secondary shell(exec)";
+      echo " -i ContainerName - Get info about container(inspect)";
+      echo " -k ContainerName - Stop or Kill container";
+      echo -e " -r ContainerName - Run/Start a stopped container\n";
+      exit
+      ;;
+    p)
+      /usr/bin/docker ps -a
+      exit
+      ;;
+    a)
+      echo -e "\nAttached to container.\n"
+      echo -e "\nType exit to view help.\n"
+      /usr/bin/docker attach ${OPTARG}
+      exit
+      ;;
+    e)
+      echo -e "\nAttached to container.\n"
+      /usr/bin/docker exec ${OPTARG} /bin/bash
+      exit
+      ;;
+    k)
+      echo -e "\nStopping...\n"
+      /usr/bin/docker stop ${OPTARG} || /usr/bin/docker kill ${OPTARG}
+      exit
+      ;;
+    r)
+      echo -e "\nStarting...\n"
+      /usr/bin/docker start ${OPTARG}
+      exit
+      ;;
+    i)
+      /usr/bin/docker inspect ${OPTARG}
+      exit
+      ;;
+  esac
+done
+
+/usr/local/bin/checkPreviousContainer $name
+if [ $? -eq 0 ]; then
+    /usr/local/bin/checkPreviousContainer $name;
+else
+    echo -e "\nContainer Exists...\n";
+    exit;
+fi
+
+portEx=(21 23 53 500 4444 5000 8080 8443 80 443)
+portPh=(80 443)
+
+allIP=(172.16.28.65 172.16.28.66 172.16.28.67 172.16.28.68 172.16.28.69 172.16.28.70 172.16.28.71)
+usedIP=($(docker ps|grep -v '^CONT'|rev|awk '{print $2}'|rev|cut -d: -f1|sort|uniq|sed ':a;N;$!ba;s/\n/ /g'))
+
+#python is much easier than bash for this, this entire thing should be written in some actual language, all of this should
+pyPrint=$(echo -e "\n\r\n\rif len(c) > 0:\n\r\tprint c[0];\n\r")
+pyCommand="a = [\"${allIP[0]}\",\"${allIP[1]}\",\"${allIP[2]}\",\"${allIP[3]}\",\"${allIP[4]}\",\"${allIP[5]}\",\"${allIP[6]}\"];b = [\"${usedIP[0]}\",\"${usedIP[1]}\",\"${usedIP[2]}\",\"${usedIP[3]}\",\"${usedIP[4]}\",\"${usedIP[5]}\",\"${usedIP[6]}\"];c = filter(lambda x: x not in b, a); $pyPrint"
+availIP=$(echo -e $pyCommand | python -)
+unset pyPrint pyCommand
+
+av1=$(echo $(echo $(echo $availIP|cut -d. -f1,2,3)))
+av2=$(echo -e "172.16.28")
+if [ "$av1" = "$av2" ] ;then
+  echo -e "\nIPs are available\n"
+else
+  echo -e "\nNo IPs available"
+  echo -e "\nYou must stop a running container to continue or use another host\n"
+  docker ps
+  unset av1 av2
+  exit
+fi
+
+echo -e "\nUsage: $0 [options]"; echo -e "Example: $0 -n container_name -s /sourceDir -d /destDir\n\n"
+echo "IPs total: ${allIP[*]}"
+echo "IPs in use: ${usedIP[*]}"
+echo "First IP available: $availIP"
+echo
+echo "Assigning Private IP $availIP to your container"
+echo "Your container will have a matching NAT rule on Public IP 168.215.65."$(echo $availIP |cut -d. -f4)
+echo
+echo "To attach to your container run 'engagement -a <name or id>'"
+echo "To detach from your container use <ctrl+p><ctrl+q>"
+echo "To list existing containers run 'engagement -p'"
+echo "To stop your container run 'engagement -k <name or id>' use 'engagement -r <name or id>' to start it again"
+echo "You should keep your containers running during an engagement as your IP address may otherwise be given away to another user"
+echo "Your stopped or killed container will be automatically deleted after 1 month"
+echo
+
+#replace this ridiculous line with a foreach
+dockerCommandEx="docker run -it -d --name "$name"" #-p $availIP:${portEx[0]}:${portEx[0]} -p $availIP:${portEx[1]}:${portEx[1]} -p $availIP:${portEx[2]}:${portEx[2]} -p $availIP:${portEx[3]}:${portEx[3]} -p $availIP:${portEx[4]}:${portEx[4]} -p $availIP:${portEx[5]}:${portEx[5]} -p $availIP:${portEx[6]}:${portEx[6]} -p $availIP:${portEx[7]}:${portEx[7]} -p $availIP:${portEx[8]}:${portEx[8]} -p $availIP:${portEx[9]}:${portEx[9]} -p $availIP:${portEx[0]}:${portEx[0]}/udp -p $availIP:${portEx[1]}:${portEx[1]}/udp -p $availIP:${portEx[2]}:${portEx[2]}/udp -p $availIP:${portEx[3]}:${portEx[3]}/udp -p $availIP:${portEx[4]}:${portEx[4]}/udp -p $availIP:${portEx[5]}:${portEx[5]}/udp -p $availIP:${portEx[6]}:${portEx[6]}/udp -p $availIP:${portEx[7]}:${portEx[7]}/udp -p $availIP:${portEx[8]}:${portEx[8]}/udp -p $availIP:${portEx[9]}:${portEx[9]}/udp"
+#dockerCommandPh="docker run -it -d --name "$name"_Ph" #-p $availIP:${portPh[0]}:${portPh[0]} -p $availIP:${portPh[1]}:${portPh[1]}"
+
+if [[ ! -z $hostDir && ! -z $containerDir ]] ; then
+  dockerCommandEx=$dockerCommandEx" -v $hostDir:$containerDir"
+#  dockerCommandPh=$dockerCommandPh" -v $hostDir:$containerDir"  
+fi
+
+dockerCommandEx=$dockerCommandEx" -p $availIP:1025:1025 exploit /usr/local/bin/mainThread"
+#dockerCommandPh=$dockerCommandPh" phishing"  
+
+echo -e "\nAbout to create containers with the following commands... "
+echo $dockerCommandEx
+#echo $dockerCommandPh
+echo -e "\n\nAre you sure you want to continue?\n"
+read -p "[y or N]" -n 1 -r
+
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+  echo -e "\ncontinuing\n"
+  logger -s -t $(basename $0) "$dockerCommandEx"
+  $dockerCommandEx
+  containerIP=$(docker inspect $(echo "$name") |grep '^            "IPAddress":'|cut -f2 -d':'|cut -f1 -d',')
+  echo -e "\n\nContainerIP: $containerIP\nPrivateIP:  \"$availIP\"\nPublicIP:  \"168.215.65."$(echo \"$availIP\" |cut -d. -f4)
+  echo -e "\n\n"
+  unset dockerCommandEx availIP usedIP allIP containerIP 
+else
+  unset dockerCommandEx availIP usedIP allIP containerIP
+  exit
+fi

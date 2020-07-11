@@ -1,0 +1,6 @@
+C:\Users\keith.walker\Source\Repos\Egscape\Windows\Egscape-cli\Egscape-cli\bin\x64\Debug\Egscape-cli.exe
+C:\Users\keith.walker\Source\Repos\Egscape\Windows\Egscape-cli\Egscape-cli\bin\x64\Debug\Egscape-cli.pdb
+C:\Users\keith.walker\Source\Repos\Egscape\Windows\Egscape-cli\Egscape-cli\obj\x64\Debug\Egscape-cli.exe
+C:\Users\keith.walker\Source\Repos\Egscape\Windows\Egscape-cli\Egscape-cli\obj\x64\Debug\Egscape-cli.pdb
+C:\Users\keith.walker\Source\Repos\Egscape\Windows\Egscape\Egscape-cli\obj\x64\Debug\Egscape-cli.exe
+C:\Users\keith.walker\Source\Repos\Egscape\Windows\Egscape\Egscape-cli\obj\x64\Debug\Egscape-cli.pdb

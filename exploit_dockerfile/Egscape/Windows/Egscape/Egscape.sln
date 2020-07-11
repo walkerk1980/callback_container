@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Egscape-cli", "Egscape-cli\Egscape-cli.csproj", "{0A863549-F0D5-4508-854F-273CFB788898}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Egscape-gui", "Egscape-gui\Egscape-gui.csproj", "{BC1EA562-A936-4BA1-BB10-DA58579A7C36}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0A863549-F0D5-4508-854F-273CFB788898}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{0A863549-F0D5-4508-854F-273CFB788898}.Debug|x64.ActiveCfg = Debug|x64
+		{0A863549-F0D5-4508-854F-273CFB788898}.Debug|x64.Build.0 = Debug|x64
+		{0A863549-F0D5-4508-854F-273CFB788898}.Debug|x86.ActiveCfg = Debug|x86
+		{0A863549-F0D5-4508-854F-273CFB788898}.Debug|x86.Build.0 = Debug|x86
+		{0A863549-F0D5-4508-854F-273CFB788898}.Release|Any CPU.ActiveCfg = Release|x86
+		{0A863549-F0D5-4508-854F-273CFB788898}.Release|x64.ActiveCfg = Release|x64
+		{0A863549-F0D5-4508-854F-273CFB788898}.Release|x64.Build.0 = Release|x64
+		{0A863549-F0D5-4508-854F-273CFB788898}.Release|x86.ActiveCfg = Release|x86
+		{0A863549-F0D5-4508-854F-273CFB788898}.Release|x86.Build.0 = Release|x86
+		{BC1EA562-A936-4BA1-BB10-DA58579A7C36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC1EA562-A936-4BA1-BB10-DA58579A7C36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC1EA562-A936-4BA1-BB10-DA58579A7C36}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BC1EA562-A936-4BA1-BB10-DA58579A7C36}.Debug|x64.Build.0 = Debug|Any CPU
+		{BC1EA562-A936-4BA1-BB10-DA58579A7C36}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BC1EA562-A936-4BA1-BB10-DA58579A7C36}.Debug|x86.Build.0 = Debug|Any CPU
+		{BC1EA562-A936-4BA1-BB10-DA58579A7C36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC1EA562-A936-4BA1-BB10-DA58579A7C36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC1EA562-A936-4BA1-BB10-DA58579A7C36}.Release|x64.ActiveCfg = Release|Any CPU
+		{BC1EA562-A936-4BA1-BB10-DA58579A7C36}.Release|x64.Build.0 = Release|Any CPU
+		{BC1EA562-A936-4BA1-BB10-DA58579A7C36}.Release|x86.ActiveCfg = Release|Any CPU
+		{BC1EA562-A936-4BA1-BB10-DA58579A7C36}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,46 @@
+#!/bin/bash
+
+input=$1
+
+if [ $1 ]; then
+    echo -e "Checking if $1 container already exists..\n";
+else
+    input="39jmd89g9hdsg908dsojk34kjmn";
+fi
+
+running=$(docker inspect -f='{{.State.Running}}' $input 2>/dev/null)
+
+if [ $? -eq 0 ]; then
+    exists=1;
+else
+    exists=0;
+    running="false";
+fi
+
+if [ "$running" == "true" ]; then
+    running=1;
+else
+    running=0;
+fi
+
+if [ $running -eq 1 ]; then
+    read -p "Container $input is already running, would you like to stop it? [y/N] " -n 1 -r;
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        exit 2;
+    else
+	echo -e "\nstopping...\n"
+        docker stop $input;
+	sleep 2;
+        exit 0;
+    fi
+elif [ $exists -eq 1 ]; then
+    read -p "Container $input already exists, would you like to remove it permanently? [y/N] " -n 1 -r;
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        exit 3;
+    else
+	echo -e "\nremoving...\n";
+        docker rm $input;
+        exit 0;
+    fi
+fi
+

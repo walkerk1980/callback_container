@@ -1,0 +1,104 @@
+#!/bin/bash
+
+name=$(/usr/bin/whoami|cut -d'\' -f2)
+echo
+
+dockermembership=$(sudo /usr/local/bin/dockergroup $name)
+dmemwc=$(echo $dockermembership |wc -c)
+
+if [ "$dmemwc" = "45" ] ;then
+	echo "You are a member of the Docker Group"
+else
+	echo -e "You have been added to the Docker group,\nyou must log out and back in once,\nbefore you can continue to use this script or docker\n"
+	exit
+fi 
+
+echo;echo
+
+while getopts n:s:d:h opts; do
+  case ${opts} in
+    n)
+      name=${OPTARG}_$name
+      echo "name: $name"
+      ;;
+    s)
+      hostDir=${OPTARG}
+      echo "hd: $hostDir"
+      ;;
+    d)
+      containerDir=${OPTARG}
+      echo "cd: $containerDir"
+      ;;
+    h)
+      echo "Usage: $0 [options]"; echo "Example: $0 -n container_name -s /sourceDir -d /destDir";echo -e "/n-n Container Name/n-s Source Directory from Host\n-d Destination in container to mount Directory"; exit 1;
+      ;;
+  esac
+done
+
+portEx=(30000)
+
+allIP=(172.16.28.21)
+usedIP=($(docker ps|grep -v '^CONT'|rev|awk '{print $2}'|rev|cut -d: -f1|sort|uniq|sed ':a;N;$!ba;s/\n/ /g'))
+
+#python is much easier than bash for this, this entire thing should be written in some actual language, all of this should
+pyPrint=$(echo -e "\n\r\n\rif len(c) > 0:\n\r\tprint c[0];\n\r")
+pyCommand="a = [\"${allIP[0]}\",\"${allIP[1]}\",\"${allIP[2]}\",\"${allIP[3]}\",\"${allIP[4]}\",\"${allIP[5]}\",\"${allIP[6]}\"];b = [\"${usedIP[0]}\",\"${usedIP[1]}\",\"${usedIP[2]}\",\"${usedIP[3]}\",\"${usedIP[4]}\",\"${usedIP[5]}\",\"${usedIP[6]}\"];c = filter(lambda x: x not in b, a); $pyPrint"
+availIP=$(echo -e $pyCommand | python -)
+unset pyPrint pyCommand
+
+av1=$(echo $(echo $(echo $availIP|cut -d. -f1,2,3)))
+av2=$(echo -e "172.16.28")
+if [ "$av1" = "$av2" ] ;then
+  echo "IP available"
+else
+  echo -e "\nNo IPs available"
+  echo -e "\nYou must stop a NonStandard running container (NS) to continue or use another host\n"
+  docker ps
+  unset av1 av2
+  exit
+fi
+
+echo "Usage: $0 [options]"; echo "Example: $0 -n container_name -s /sourceDir -d /destDir"
+echo "IPs total: ${allIP[*]}"
+echo "IPs in use: ${usedIP[*]}"
+echo "First IP available: $availIP"
+echo
+echo "Assigning Private IP $availIP to your container"
+echo "Your container will have a matching NAT rule on Public IP 168.215.65."$(echo $availIP |cut -d. -f4)
+echo
+echo "To attach to your container run 'docker attach <name or id>' you can tab complete this"
+echo "To detach from your container use <ctrl+p><ctrl+q>"
+echo "To list running containers run 'docker ps', to list running and stopped containers run 'docker ps -a'"
+echo "To stop your container run 'docker stop <name or id>' use docker start to start it again"
+echo "You should keep your containers running during an engagement as your IP address may otherwise be given away to another user"
+echo "Your stopped or killed container will be automatically deleted after 1 month"
+echo
+
+#replace this ridiculous line with a foreach
+dockerCommandEx="docker run -it -d --name "$name"_Ex_NS -p $availIP:${portEx[0]}:${portEx[0]} -p $availIP:${portEx[0]}:${portEx[0]}/udp"
+
+if [[ ! -z $hostDir && ! -z $containerDir ]] ; then
+  dockerCommandEx=$dockerCommandEx" -v $hostDir:$containerDir"
+fi
+
+dockerCommandEx=$dockerCommandEx" -p $availIP:22:22 -p $availIP:222:22 exploit"
+
+unset availIP usedIP allIP
+
+echo -e "\nAbout to create containers with the following commands... "
+echo $dockerCommandEx
+echo -e "\n\nAre you sure you want to continue?\n"
+read -p "[y or N]" -n 1 -r
+
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+  echo -e "\ncontinuing\n"
+  logger -s -t $(basename $0) "$dockerCommandEx"
+  $dockerCommandEx
+  unset dockerCommandEx
+else
+  unset dockerCommandEx
+  exit
+fi
+
+
